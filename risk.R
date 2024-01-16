@@ -58,16 +58,17 @@ PredictCORE <- function(data) {
   risk(lp)
 }
 
+# Check that the prediction function works
 test_data <- data.frame(Id = 1:5, 
                         start_age = c(33.33, 64.82, 48.65, 42.95, 49.15), 
                         sex = c(0, 0, 0, 1, 1), 
                         AST = c(0.29, 0.33, 0.22, 0.57, 0.34),
                         ALT = c(0.27, 0.22, 0.33, 0.76, 0.46),
                         GGT = c(0.19, 0.38, 0.67, 0.30, 0.18))
+PredictCORE(test_data)
 
-# read in your data
+# Read in your data
 # data <-
-data <- test_data
 
 # Generate predictions
 p <- PredictCORE(data)
