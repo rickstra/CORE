@@ -76,10 +76,11 @@ p <- PredictCORE(data)
 # Calculate AUC
 # Requires the timeROC package
 # install.packages("timeROC")
-with(data,
-     timeROC::timeROC(time, event, p, cause = 1, times = 1:10, ROC = FALSE)$AUC_2
-     )
-
+auc <- with(data,
+         timeROC::timeROC(time, event, p, cause = 1, times = 1:10, 
+                          ROC = FALSE)$AUC_2
+       )
+auc
 # Observed:Expected ratio
 # Requires cmprisk package
 # install.packages("cmprisk")
