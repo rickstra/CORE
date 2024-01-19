@@ -82,9 +82,9 @@ auc <- with(data,
        )
 auc
 # Observed:Expected ratio
-# Requires cmprisk package
-# install.packages("cmprisk")
-cinc <- with(data, as.data.frame(cmprisk::cuminc(time, event)[[1]]))
+# Requires cmprsk package
+# install.packages("cmprsk")
+cinc <- with(data, as.data.frame(cmprsk::cuminc(time, event)[[1]]))
 observed <- cinc[which(cinc$time > 10)[1] - 1, ]
 expected <- mean(p)
 
