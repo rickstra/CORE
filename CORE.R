@@ -121,13 +121,15 @@ library(tidyverse)
     ) %>% arrange(p)
   
   cal_df$cumev <- cumsum(cal_df$event==1)
-  m <- pmin(pmax(floor(max(cal_df$cumev) / 15), 20), 50)
+  m <- pmin(pmax(floor(max(cal_df$cumev) / 15), 10), 50)
   cal_df$set <- cal_df$cumev %/% m
   
-  cdf <- cal_df %>% group_by(set) %>% summarise(n = length(p),
-                                                mean_pred = mean(p),
-                                                lower_pred = min(p), 
-                                                upper_pred = max(p))
+  cdf <- cal_df %>% filter(!is.na(p)) %>% group_by(set) %>% 
+                summarise(n = length(p),
+                          ev = sum(event == 1),
+                          mean_pred = mean(p),
+                          lower_pred = min(p), 
+                          upper_pred = max(p))
   cinc <- with(cal_df, cmprsk::cuminc(time, event, set))
   cinc$Tests <- NULL
   
@@ -145,9 +147,9 @@ library(tidyverse)
 cal_plot <- ggplot(cdf, aes(mean_pred, obs)) + 
   geom_point() + 
   geom_errorbar(aes(ymin = lower, ymax = upper, width = 0)) + 
-  geom_segment(aes(x = lower_pred, xend = upper_pred, y = lower)) + 
-  geom_segment(aes(x = lower_pred, xend = upper_pred, y = upper)) + 
-  geom_smooth() +
+  geom_segment(aes(x = lower_pred, xend = upper_pred, y = lower, yend = lower)) + 
+  geom_segment(aes(x = lower_pred, xend = upper_pred, y = upper, yend = upper)) + 
+  # geom_smooth() +
   xlim(0, 1) + ylim(0, 1) + 
   geom_abline(intercept = 0, slope = 1, linetype = 3)
 
@@ -155,15 +157,16 @@ cal_plot <- ggplot(cdf, aes(mean_pred, obs)) +
 p_max <- 0.2 
 cal_plot2 <- ggplot(cdf, aes(mean_pred, obs)) + geom_point() + 
   geom_errorbar(aes(ymin = lower, ymax = pmin(upper, p_max), width = 0)) + 
-  geom_segment(aes(x = lower_pred, xend = pmin(upper_pred, p_max), y = lower)) + 
-  geom_segment(aes(x = lower_pred, xend = pmin(upper_pred, p_max), y = upper)) + 
-  geom_smooth() +
+  geom_segment(aes(x = lower_pred, xend = pmin(upper_pred, p_max), y = lower, yend = pmin(lower, p_max))) + 
+  geom_segment(aes(x = lower_pred, xend = pmin(upper_pred, p_max), y = upper, yend = pmin(upper, p_max))) + 
+  # geom_smooth() +
   xlim(0, p_max) + ylim(0, p_max) + 
   geom_abline(intercept = 0, slope = 1, linetype = 3) 
 
 # All results collected #-------------------------------------------------------
 auc
 oe
+as.data.frame(cdf)
 cal_plot
 cal_plot2
 
