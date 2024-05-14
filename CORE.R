@@ -166,7 +166,7 @@ cal_plot2 <- ggplot(cdf, aes(mean_pred, obs)) + geom_point() +
 # All results collected #-------------------------------------------------------
 auc
 oe
-as.data.frame(cdf)
+round(as.data.frame(cdf), 4)
 cal_plot
 cal_plot2
 
