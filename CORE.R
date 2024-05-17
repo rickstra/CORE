@@ -213,7 +213,7 @@ nb_plot <- ggplot(nb_long, aes(p_t * 100, value, color = name)) +
   theme(legend.position = c(0.7, 0.7)) + 
   scale_x_continuous("Risk Threshold (%)", breaks = c(2 * (0:10)), 
                      minor_breaks = 2 * (0:10) + 1) + 
-  scale_y_continuous("Net Benefit", limits = c(-0.0001, 0.003))
+  scale_y_continuous("Net Benefit", limits = c(-0.0001, nb$all[1]+0.0001))
 
 
 # All results collected #-------------------------------------------------------
