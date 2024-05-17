@@ -163,10 +163,69 @@ cal_plot2 <- ggplot(cdf, aes(mean_pred, obs)) + geom_point() +
   xlim(0, p_max) + ylim(0, p_max) + 
   geom_abline(intercept = 0, slope = 1, linetype = 3) 
 
+# Net Benefit #-----------------------------------------------------------------
+NetBenefit <- function(risk, time, status, event = 1, t_pred = 10, p_max = 1) {
+  d <- data.frame(t = pmin(time, t_pred), 
+                  s = ifelse(time > t_pred, 0, status), 
+                  r = risk)
+  N <- nrow(d)
+  ev <- paste(1, event)
+  
+  compCI <- with(d, as.data.frame(cmprsk::cuminc(t, s)[[ev]]))
+  compCI <- compCI[nrow(compCI), ]
+  compCI$tp <- compCI$est * N
+  compCI$fp <- (1 - compCI$est) * N
+  
+  p_max <- min(max(d$r[which(d$s == event)]), p_max)
+  p_t <- c(seq(0, 0.01, by = 0.002), 
+           seq(0.015, 0.1, by = 0.005), 
+           seq(0.11, p_max, by = 0.01))
+
+  w <- p_t / (1 - p_t)
+  
+  all_dc <- (compCI$tp - w * compCI$fp) / N
+  all_dc
+  model_dc <- sapply(1:length(p_t), function(i) {
+    p <- p_t[i]
+    ix <- which(d$r >= p)
+    ci <- with(d[ix, ], as.data.frame(cmprsk::cuminc(t, s)[[ev]]))
+    ci <- ci[nrow(ci), 2]
+    m <- length(ix)
+    tp <- ci * m
+    fp <- (1 - ci) * m
+    nb <- (tp - w[i] * fp) / N
+    #c(p_t = p, ci = ci, tp = tp, fp = fp, nb = nb)
+    nb
+  }) 
+  data.frame(p_t = p_t, all = all_dc, model = model_dc)
+}
+
+nb <- NetBenefit(data$p, data$time, data$event, p_max = 0.2)
+
+nb_long <- pivot_longer(nb, c("all", "model"))
+nb_long <- rbind(nb_long, data.frame(p_t = nb$all[1], name = "all", value = 0))
+
+nb_plot <- ggplot(nb_long, aes(p_t * 100, value, color = name)) + 
+  geom_line() + geom_hline(yintercept = 0, linetype = 3) + 
+  scale_color_discrete("Strategy", labels = c("Treat All", "Use CORE")) + 
+  theme(legend.position = c(0.7, 0.7)) + 
+  scale_x_continuous("Risk Threshold (%)", breaks = c(2 * (0:10)), 
+                     minor_breaks = 2 * (0:10) + 1) + 
+  scale_y_continuous("Net Benefit", limits = c(-0.0001, 0.003))
+
+
 # All results collected #-------------------------------------------------------
+
+# Prints
 auc
 oe
-round(as.data.frame(cdf), 4)
+cdf
+nb
+
+#Plots
 cal_plot
 cal_plot2
+nb_plot
+
+
 
