@@ -103,7 +103,7 @@ cinc <- with(data, as.data.frame(cmprsk::cuminc(time, event)[[1]]))
 observed <- cinc[which(cinc$time > 10)[1] - 1, ]
 expected <- mean(data$p)
 
-oe <- c(observed, expected, 
+oe <- c(observed$est, expected, 
         exp(log(observed$est) - log(expected) +
             c(0, -1, 1) * 1.96 * sqrt(var(p) / length(p) / expected ^ 2 +
                                         observed$var / observed$est ^ 2)))
