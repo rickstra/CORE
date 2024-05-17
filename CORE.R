@@ -221,7 +221,7 @@ nb_plot <- ggplot(nb_long, aes(p_t * 100, value, color = name)) +
 # Prints
 auc
 oe
-cdf
+as.data.frame(cdf)
 nb
 
 #Plots
