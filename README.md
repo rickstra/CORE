@@ -5,4 +5,5 @@
 - **validation:** Code and instructions for validating the CORE model on a new dataset.
 
 The web calculator is available at www.CORE-model.com
+
 Alternatively, it is available at rickstra.shinyapps.io/CORE
