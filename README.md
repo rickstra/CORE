@@ -8,4 +8,4 @@ The web calculator is available at www.CORE-model.com
 
 Alternatively, it is available at [rickstra.shinyapps.io/CORE][shinyapps_link]
 
-[shinyapps_link]: rickstra.shinyapps.io/CORE
+[shinyapps_link]: https://rickstra.shinyapps.io/CORE
