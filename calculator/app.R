@@ -33,8 +33,8 @@ ui <- page_sidebar(
       card_header("Sex"),
       radioButtons(
         "sex", NULL, #"Select sex:",
-        choices = list("Male" = 0, "Female" = 1),
-        selected = 0,
+        choices = list("Male" = 1, "Female" = 0),
+        selected = 1,
         inline = TRUE
       )
     ),
