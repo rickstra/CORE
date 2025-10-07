@@ -1,10 +1,9 @@
 library(shiny)
 library(bslib)
 library(bsicons)
-#library(shinythemes)
 library(shinydashboard)
 source("CORE_all.R")
-#source("CORE_risk.R")
+load("PredictionIntervals.RData")
 
 # Define UI ----
 ui <- page_sidebar(
@@ -75,13 +74,13 @@ ui <- page_sidebar(
   ),
   card(
     #textOutput("risk")),
-    value_box("The estimated 10-year risk of liver cirrhosis or complications thereof is:", textOutput("risk"),
+    value_box("The estimated 10-year risk of liver cirrhosis or related complications is:", textOutput("risk"),
               showcase = icon("user-doctor"),
               theme = value_box_theme(bg = "#4F0433")
-              ),
+              )
     #valueBoxOutput("vbox")
-    #),
-#card(
+    ),
+card(
     verbatimTextOutput("messages")) 
 )
 
@@ -144,20 +143,22 @@ server <- function(input, output) {
                       AST = ast * ast_unit,
                       ALT = alt * alt_unit
       )
-      # f <- ifelse(input$risk_group == 1, 
-      #             PredictCORE_full, 
-      #             PredictCORE_full)
       f <- PredictCORE_full
-      f(d)
+      p <- f(d)
+      ci <- PI(p)
+      ci
     }
   })
   output$risk <- renderText({
     p <- p_update()
-    if (is.numeric(p)) {
-      if (p > 0.2) {
+    if (is.numeric(p[1])) {
+      if (p[1] > 0.2) {
         ">20%"
+      } else if (p[1] < 0.001) {
+        "<0.1%"
       } else {
-        paste0(round(p * 100, 2), "%")
+        p <- round(p * 100, 1)
+        paste0(p[1], "%", " (", p[2], "%-", p[3], "%)")
       }
     }
     })
